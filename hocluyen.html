@@ -65,7 +65,7 @@
                 <i class="fas fa-chalkboard-teacher mr-2"></i> Gia Sư AI
             </button>
             <button onclick="switchTab('khode')" id="btn-khode" class="tab-btn px-6 py-3 text-gray-600 hover:text-primary transition whitespace-nowrap">
-                <i class="fas fa-folder-open mr-2"></i> Kho Đề Thi (Toán, Văn, Anh)
+                <i class="fas fa-folder-open mr-2"></i> Kho Đề Thi
             </button>
             <button onclick="switchTab('taode')" id="btn-taode" class="tab-btn px-6 py-3 text-gray-600 hover:text-primary transition whitespace-nowrap">
                 <i class="fas fa-magic mr-2"></i> AI Tạo Đề Ôn Tập
@@ -96,12 +96,10 @@
 
         <div id="tab-khode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 p-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-heading font-bold text-gray-800">Kho Đề Thi Vào 10</h2>
-                
-                <label class="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
-                    <i class="fas fa-upload"></i> Tải tài liệu lên
-                    <input type="file" id="upload-file-btn" class="hidden" accept=".pdf,.doc,.docx">
-                </label>
+                <h2 class="text-2xl font-heading font-bold text-gray-800">Kho Đề Thi Tham Khảo</h2>
+                <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                    <i class="fas fa-info-circle text-blue-500 mr-1"></i> Tài liệu được chọn lọc bởi Admin
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="file-grid">
@@ -255,56 +253,52 @@
         });
 
         // ----------------------------------------------------
-        // TÍNH NĂNG 2: KHO ĐỀ THI (Giả lập bằng LocalStorage)
+        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (PHƯƠNG ÁN 1)
         // ----------------------------------------------------
-        const defaultFiles = [
-            { id: 1, name: "Đề thi chính thức vào 10 môn Toán - Hà Nội 2023.pdf", icon: "fa-file-pdf", color: "text-red-500", date: "15/05/2026" },
-            { id: 2, name: "Đề thi Ngữ Văn vào 10 chuẩn cấu trúc.docx", icon: "fa-file-word", color: "text-blue-500", date: "10/05/2026" },
-            { id: 3, name: "Tuyển tập 50 đề Tiếng Anh cực hay.pdf", icon: "fa-file-pdf", color: "text-red-500", date: "01/05/2026" }
+        
+        // MẢNG CHỨA DỮ LIỆU ĐỀ THI: Khi bạn đưa file lên GitHub, hãy thêm thông tin file vào đây.
+        const staticFiles = [
+            { 
+                title: "Đề thi chính thức vào 10 môn Toán - Hà Nội 2023", 
+                fileName: "De_Toan_HN_2023.pdf", // Tên file thực tế bạn up lên thư mục tailieu
+                path: "./tailieu/De_Toan_HN_2023.pdf", // Đường dẫn tải
+                icon: "fa-file-pdf", color: "text-red-500", date: "15/05/2026" 
+            },
+            { 
+                title: "Đề thi Ngữ Văn vào 10 chuẩn cấu trúc", 
+                fileName: "De_Van_Chuan.docx", 
+                path: "./tailieu/De_Van_Chuan.docx", 
+                icon: "fa-file-word", color: "text-blue-500", date: "10/05/2026" 
+            },
+            { 
+                title: "Tuyển tập 50 đề Tiếng Anh cực hay", 
+                fileName: "50_De_Tieng_Anh.pdf", 
+                path: "./tailieu/50_De_Tieng_Anh.pdf", 
+                icon: "fa-file-pdf", color: "text-red-500", date: "01/05/2026" 
+            }
         ];
 
-        function loadFiles() {
+        function loadStaticFiles() {
             const fileGrid = document.getElementById('file-grid');
-            let storedFiles = JSON.parse(localStorage.getItem('kho_de_thi')) || defaultFiles;
+            fileGrid.innerHTML = ''; // Làm sạch bảng
             
-            fileGrid.innerHTML = '';
-            storedFiles.reverse().forEach(file => {
+            staticFiles.forEach(file => {
                 fileGrid.innerHTML += `
-                    <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition bg-gray-50">
+                    <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition bg-gray-50 group">
                         <i class="fas ${file.icon} text-4xl ${file.color}"></i>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-gray-800 truncate" title="${file.name}">${file.name}</h4>
-                            <p class="text-xs text-gray-500 mt-1">Đã tải lên: ${file.date}</p>
+                            <h4 class="font-semibold text-gray-800 truncate" title="${file.title}">${file.title}</h4>
+                            <p class="text-xs text-gray-500 mt-1">Cập nhật: ${file.date}</p>
                         </div>
-                        <button onclick="alert('Tính năng tải xuống file thực tế cần kết nối Database Backend. Đây là bản mô phỏng giao diện.')" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition">
+                        <a href="${file.path}" download="${file.fileName}" target="_blank" title="Tải xuống" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition cursor-pointer">
                             <i class="fas fa-download"></i>
-                        </button>
+                        </a>
                     </div>
                 `;
             });
         }
 
-        // Xử lý nút Upload ảo
-        document.getElementById('upload-file-btn').addEventListener('change', function(e) {
-            if(e.target.files.length > 0) {
-                const fileName = e.target.files[0].name;
-                const isWord = fileName.endsWith('.doc') || fileName.endsWith('.docx');
-                
-                let storedFiles = JSON.parse(localStorage.getItem('kho_de_thi')) || defaultFiles;
-                storedFiles.push({
-                    id: Date.now(),
-                    name: fileName,
-                    icon: isWord ? "fa-file-word" : "fa-file-pdf",
-                    color: isWord ? "text-blue-500" : "text-red-500",
-                    date: new Date().toLocaleDateString('vi-VN')
-                });
-                localStorage.setItem('kho_de_thi', JSON.stringify(storedFiles));
-                loadFiles();
-                alert(`Đã lưu "${fileName}" vào kho đề ảo thành công!`);
-            }
-        });
-
-        loadFiles(); // Init tab 2
+        loadStaticFiles(); // Chạy hàm render khi web tải xong
 
         // ----------------------------------------------------
         // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP
