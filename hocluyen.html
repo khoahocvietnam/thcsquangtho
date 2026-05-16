@@ -98,7 +98,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-heading font-bold text-gray-800">Kho Đề Thi Tham Khảo</h2>
                 <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                    <i class="fas fa-info-circle text-blue-500 mr-1"></i> Tài liệu được chọn lọc bởi Admin
+                    <i class="fas fa-check-circle text-blue-500 mr-1"></i> Tài liệu chính thức từ Admin
                 </div>
             </div>
 
@@ -210,7 +210,6 @@
 
             isTutorThinking = true;
 
-            // PROMPT ENGINEERING DÀNH CHO GIA SƯ
             const systemPrompt = `[YÊU CẦU NGHIÊM NGẶT: Bạn là một Thầy/Cô giáo xuất sắc, đang giải đáp bài tập cho học sinh cấp 2/cấp 3.
             Nguyên tắc:
             1. Giải thích chính xác, đi thẳng vào trọng tâm, phân tích từng bước rõ ràng.
@@ -231,10 +230,8 @@
                 const data = await response.json();
                 const reply = data.reply || data.text || "Xin lỗi, thầy cô không thể phản hồi lúc này.";
 
-                // Remove loading
                 giasuChat.removeChild(loadingDiv);
 
-                // Render Bot Message
                 const botDiv = document.createElement('div');
                 botDiv.className = 'flex items-start gap-3';
                 const cleanHTML = DOMPurify.sanitize(marked.parse(reply));
@@ -253,34 +250,40 @@
         });
 
         // ----------------------------------------------------
-        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (PHƯƠNG ÁN 1)
+        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (ĐÃ ĐỒNG BỘ GITHUB)
         // ----------------------------------------------------
         
-        // MẢNG CHỨA DỮ LIỆU ĐỀ THI: Khi bạn đưa file lên GitHub, hãy thêm thông tin file vào đây.
+        // Đây là mảng chứa chính xác các file bạn đã tải lên Github
         const staticFiles = [
             { 
-                title: "Đề thi chính thức vào 10 môn Toán - Hà Nội 2023", 
-                fileName: "De_Toan_HN_2023.pdf", // Tên file thực tế bạn up lên thư mục tailieu
-                path: "./tailieu/De_Toan_HN_2023.pdf", // Đường dẫn tải
-                icon: "fa-file-pdf", color: "text-red-500", date: "15/05/2026" 
+                title: "Đề thi Toán vào 10", 
+                fileName: "detoan.pdf", 
+                path: "./tailieu/detoan.pdf", // Trỏ đúng vào thư mục tailieu và tên file
+                icon: "fa-file-pdf", 
+                color: "text-red-500", 
+                date: "Cập nhật mới nhất" 
             },
             { 
-                title: "Đề thi Ngữ Văn vào 10 chuẩn cấu trúc", 
-                fileName: "De_Van_Chuan.docx", 
-                path: "./tailieu/De_Van_Chuan.docx", 
-                icon: "fa-file-word", color: "text-blue-500", date: "10/05/2026" 
+                title: "Đề thi Ngữ Văn vào 10", 
+                fileName: "devan.docx", 
+                path: "./tailieu/devan.docx", // Trỏ đúng vào thư mục tailieu và tên file
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
             },
             { 
-                title: "Tuyển tập 50 đề Tiếng Anh cực hay", 
-                fileName: "50_De_Tieng_Anh.pdf", 
-                path: "./tailieu/50_De_Tieng_Anh.pdf", 
-                icon: "fa-file-pdf", color: "text-red-500", date: "01/05/2026" 
+                title: "Đề thi Tiếng Anh vào 10", 
+                fileName: "deanh.docx", 
+                path: "./tailieu/deanh.docx", // Trỏ đúng vào thư mục tailieu và tên file
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
             }
         ];
 
         function loadStaticFiles() {
             const fileGrid = document.getElementById('file-grid');
-            fileGrid.innerHTML = ''; // Làm sạch bảng
+            fileGrid.innerHTML = ''; 
             
             staticFiles.forEach(file => {
                 fileGrid.innerHTML += `
@@ -288,9 +291,9 @@
                         <i class="fas ${file.icon} text-4xl ${file.color}"></i>
                         <div class="flex-1 min-w-0">
                             <h4 class="font-semibold text-gray-800 truncate" title="${file.title}">${file.title}</h4>
-                            <p class="text-xs text-gray-500 mt-1">Cập nhật: ${file.date}</p>
+                            <p class="text-xs text-gray-500 mt-1">${file.date}</p>
                         </div>
-                        <a href="${file.path}" download="${file.fileName}" target="_blank" title="Tải xuống" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition cursor-pointer">
+                        <a href="${file.path}" download="${file.fileName}" target="_blank" title="Tải xuống" class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition cursor-pointer shadow-sm">
                             <i class="fas fa-download"></i>
                         </a>
                     </div>
@@ -298,7 +301,7 @@
             });
         }
 
-        loadStaticFiles(); // Chạy hàm render khi web tải xong
+        loadStaticFiles();
 
         // ----------------------------------------------------
         // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP
@@ -310,7 +313,6 @@
             const subject = document.getElementById('gen-subject').value;
             const level = document.getElementById('gen-level').value;
 
-            // Trạng thái Loading
             btnGenerate.disabled = true;
             btnGenerate.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang biên soạn...`;
             genResult.innerHTML = `
@@ -320,7 +322,6 @@
                 </div>
             `;
 
-            // PROMPT ENGINEERING CHO TẠO ĐỀ
             const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai Hội đồng ra đề thi tuyển sinh lớp 10.
             Nhiệm vụ: Tạo 01 đề tổng ôn tập môn ${subject}, độ khó: ${level}.
             Cấu trúc bài viết bắt buộc:
@@ -355,5 +356,3 @@
     </script>
 </body>
 </html>
-
-
